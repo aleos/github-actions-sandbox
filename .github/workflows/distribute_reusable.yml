@@ -15,7 +15,7 @@ jobs:
     env:
       BUILD_DIR: ${{ './build' }}
       SCHEME: ${{ inputs.scheme }}
-      CURRENT_PROJECT_VERSION: ${{ github.run_number }}
+      CURRENT_PROJECT_VERSION: ${{ github.run_id }}
 
     steps:
 
