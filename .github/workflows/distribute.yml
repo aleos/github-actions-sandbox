@@ -1,0 +1,13 @@
+name: Distribute
+
+on: push
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
+
+jobs:
+  call-workflow-passing-data:
+    uses: .github/workflows/distribute_reusable.yml
+    with:
+      scheme: "Demo"
+    secrets: inherit

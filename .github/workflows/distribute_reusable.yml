@@ -1,0 +1,23 @@
+on:
+  workflow_call:
+    inputs:
+      scheme:
+        required: true
+        type: string
+
+jobs:
+  distribute:
+    name: Distribute
+    runs-on: macos-12
+    env:
+      BUILD_DIR: ${{ './build' }}
+      SCHEME: ${{ inputs.scheme }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Distribute Test
+        run: |
+          echo "Branch is ${GITHUB_BASE_REF}"
