@@ -29,3 +29,4 @@ jobs:
           echo "Branch is ${GITHUB_BASE_REF}"
           echo "Scheme is ${SCHEME}"
           echo "Version is ${CURRENT_PROJECT_VERSION}"
+          echo "RUN_ID is ${GITHUB_RUN_ID}"
