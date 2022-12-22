@@ -1,0 +1,13 @@
+name: Distribute Prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prod:
+    uses: ./.github/workflows/distribute_reusable.yml
+    with:
+      scheme: "Production"
+    secrets: inherit

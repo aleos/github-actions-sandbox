@@ -1,0 +1,13 @@
+name: Distribute Demo
+
+on:
+  push:
+    branches:
+      - demo
+
+jobs:
+  demo:
+    uses: ./.github/workflows/distribute_reusable.yml
+    with:
+      scheme: "Demo"
+    secrets: inherit
