@@ -7,7 +7,7 @@ env:
 
 jobs:
   call-workflow-passing-data:
-    uses: .github/workflows/distribute_reusable.yml
+    uses: ./.github/workflows/distribute_reusable.yml
     with:
       scheme: "Demo"
     secrets: inherit
