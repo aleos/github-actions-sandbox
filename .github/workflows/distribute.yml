@@ -9,5 +9,5 @@ jobs:
   call-workflow-passing-data:
     uses: ./.github/workflows/distribute_reusable.yml
     with:
-      scheme: "Demo"
+      scheme: "Dev"
     secrets: inherit
