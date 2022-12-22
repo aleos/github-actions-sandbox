@@ -20,4 +20,7 @@ jobs:
 
       - name: Distribute Test
         run: |
+          echo "Test logs"
+          
           echo "Branch is ${GITHUB_BASE_REF}"
+          echo "Scheme is ${SCHEME}"
