@@ -18,6 +18,7 @@ jobs:
       BUILD_DIR: ${{ './build' }}
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
+      FILE_NAME: "filename-${{ inputs.scheme }}"
 
     steps:
 
@@ -32,3 +33,4 @@ jobs:
           echo "Scheme is ${SCHEME}"
           echo "Version is ${CURRENT_PROJECT_VERSION}"
           echo "RUN_ID is ${GITHUB_RUN_ID}"
+          echo "Filename is ${FILE_NAME}"
