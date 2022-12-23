@@ -9,5 +9,5 @@ jobs:
   dev:
     uses: ./.github/workflows/distribute.yml
     with:
-      scheme: "Dev"
+      scheme: "Some"
     secrets: inherit

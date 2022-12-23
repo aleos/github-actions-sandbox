@@ -19,6 +19,7 @@ jobs:
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
       FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
+      NAME2: ${{ secrets[format('{0}_SECREt', inputs.scheme)] }}
 
     steps:
 
@@ -37,3 +38,4 @@ jobs:
           echo "RUN_ID is ${GITHUB_RUN_ID}"
           echo "Filename is ${FILE_NAME}"
           echo "ENV var is ${SOME_ENV_VAR}"
+          echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
