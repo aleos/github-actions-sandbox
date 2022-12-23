@@ -18,7 +18,7 @@ jobs:
       BUILD_DIR: ${{ './build' }}
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
-      FILE_NAME: "filename-${{ inputs.scheme }}"
+      FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
 
     steps:
 
