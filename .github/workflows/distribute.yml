@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Distribute Test
+        env:
+          SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
         run: |
           echo "Test logs"
 
@@ -34,3 +36,4 @@ jobs:
           echo "Version is ${CURRENT_PROJECT_VERSION}"
           echo "RUN_ID is ${GITHUB_RUN_ID}"
           echo "Filename is ${FILE_NAME}"
+          echo "ENV var is ${SOME_ENV_VAR}"
