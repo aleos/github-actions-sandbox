@@ -7,7 +7,7 @@ on:
 
 jobs:
   demo:
-    uses: ./.github/workflows/distribute_reusable.yml
+    uses: ./.github/workflows/distribute.yml
     with:
       scheme: "Demo"
     secrets: inherit

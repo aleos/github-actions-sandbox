@@ -7,7 +7,7 @@ on:
 
 jobs:
   prod:
-    uses: ./.github/workflows/distribute_reusable.yml
+    uses: ./.github/workflows/distribute.yml
     with:
       scheme: "Production"
     secrets: inherit
