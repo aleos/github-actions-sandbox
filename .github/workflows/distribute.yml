@@ -44,7 +44,7 @@ jobs:
           echo "github.event.commits is ${{ github.event.commits }}"
 
           echo "===EVENT==="
-          echo "${{toJSON(github.event)}} "
+          echo "${{toJSON(github.event)}}"
           echo "====END===="
 
 
