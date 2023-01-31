@@ -69,6 +69,6 @@ jobs:
           echo "CHANGELOG IS"
           cat $CHANGELOG
 
-          # echo "===EVENT==="
-          # echo "${{toJSON(github.event)}}"
-          # echo "====END===="
+          echo "===EVENT==="
+          echo "${{toJSON(github.event)}}"
+          echo "====END===="
