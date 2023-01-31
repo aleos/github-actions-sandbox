@@ -41,6 +41,10 @@ jobs:
           echo "Filename is ${FILE_NAME}"
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
+
+          # Define changelog file path
+          CHANGELOG_FILE="./CHANGELOG.md"
+
           # Get the commit messages from the github.event.commits variable
           COMMIT_MESSAGES=$(jq -r '.[].message' <<< "$GITHUB_EVENT_COMMITS")
 
