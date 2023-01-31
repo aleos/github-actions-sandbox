@@ -62,13 +62,21 @@ jobs:
 
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
-          echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
-          echo "" >> $CHANGELOG
-          echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+          if [ "${{ github.event.name }}" == "pull_request" ]; then
+            echo "‼️PULL REQUEST‼️"
+            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
+            echo "" >> $CHANGELOG
+            echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+          else
+            echo "‼️PUSH‼️"
+            # Get the commit messages from the github.event.commits variable
+            COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
+            # Append each commit message to the changelog file
+            while read -r message; do
+              echo "- $message" >> "$CHANGELOG"
+            done <<< "$COMMIT_MESSAGES"
+          fi
+
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
-
-          echo "===EVENT==="
-          echo "${{toJSON(github.event)}}"
-          echo "====END===="
