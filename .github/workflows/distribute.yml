@@ -46,7 +46,7 @@ jobs:
           CHANGELOG_FILE="./CHANGELOG.md"
 
           # Get the commit messages from the github.event.commits variable
-          EVENT="${{toJSON(github.event)}}"
+          EVENT='${{toJSON(github.event)}}'
           echo "OK"
           COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< "${EVENT}")
 
