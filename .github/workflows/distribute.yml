@@ -56,7 +56,7 @@ jobs:
             echo "- $message" >> "$CHANGELOG_FILE"
           done <<< "$COMMIT_MESSAGES"
 
-          echo "Commit messages are ${COMMIT_MESSAGES[@]}"
+          # echo "Commit messages are ${COMMIT_MESSAGES[@]}"
           echo "Changelog file:"
           cat $CHANGELOG_FILE
 
