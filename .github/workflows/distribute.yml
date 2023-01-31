@@ -43,6 +43,10 @@ jobs:
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
           echo "github.event.commits is ${{ github.event.commits }}"
 
+          echo "===EVENT==="
+          echo "${{toJSON(github.event)}}"
+          echo "====END===="
+
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
           echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
