@@ -43,11 +43,18 @@ jobs:
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
           # Get the commit messages from the github.event.commits variable
           COMMIT_MESSAGES=$(jq -r '.[].message' <<< "$GITHUB_EVENT_COMMITS")
-          echo "Commit messages are\n${COMMIT_MESSAGES}"
 
-          echo "===EVENT==="
-          echo "${{toJSON(github.event)}}"
-          echo "====END===="
+          # Initialize the changelog file with current date
+          echo -e "## $(date +%Y-%m-%d)\n" > "$CHANGELOG_FILE"
+
+          # Append each commit message to the changelog file
+          while read -r message; do
+            echo "- $message" >> "$CHANGELOG_FILE"
+          done <<< "$COMMIT_MESSAGES"
+
+          echo "Commit messages are ${COMMIT_MESSAGES[@]}"
+          echo "Changelog file:"
+          cat $CHANGELOG_FILE
 
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
@@ -57,3 +64,7 @@ jobs:
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
+
+          # echo "===EVENT==="
+          # echo "${{toJSON(github.event)}}"
+          # echo "====END===="
