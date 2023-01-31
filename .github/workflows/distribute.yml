@@ -41,7 +41,7 @@ jobs:
           echo "Filename is ${FILE_NAME}"
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
-          echo "github.event.commits" is ${{ github.event.commits }}"
+          echo "github.event.commits is ${{ github.event.commits }}"
 
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
