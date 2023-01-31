@@ -46,7 +46,8 @@ jobs:
           CHANGELOG_FILE="./CHANGELOG.md"
 
           # Get the commit messages from the github.event.commits variable
-          COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< "${{ toJSON(github.event) }}")
+          EVENT=${{ toJSON(github.event) }}
+          COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< "${EVENT}")
 
           # Initialize the changelog file with current date
           echo -e "## $(date +%Y-%m-%d)\n" > "$CHANGELOG_FILE"
