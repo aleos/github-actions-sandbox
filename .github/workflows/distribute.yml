@@ -48,8 +48,7 @@ jobs:
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
             echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-          # elif [ "${{ github.event.name }}" == "push" ]; then
-          else
+          elif [ "${{ github.event.name }}" == "push" ]; then
             echo "‼️PUSH‼️"
             # Get the commit messages from the github.event.commits variable
             COMMIT_MESSAGES=$(jq -r 'try .commits[].message' <<< '${{toJSON(github.event)}}')

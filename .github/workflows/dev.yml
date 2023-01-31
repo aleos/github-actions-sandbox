@@ -5,7 +5,7 @@ on:
     branches:
       - dev
   pull_request:
-    # types: [closed]
+    types: [closed]
 
 jobs:
   dev:
