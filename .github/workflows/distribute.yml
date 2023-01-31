@@ -41,7 +41,9 @@ jobs:
           echo "Filename is ${FILE_NAME}"
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
-          echo "github.event.commits is ${{ github.event.commits }}"
+          # Get the commit messages from the github.event.commits variable
+          COMMIT_MESSAGES=$(jq -r '.[].message' <<< "${{ github.event.commits }}")
+          echo "Commit messages are\n${COMMIT_MESSAGES}"
 
           echo "===EVENT==="
           echo "${{toJSON(github.event)}}"
