@@ -68,7 +68,7 @@ jobs:
             echo "" >> $CHANGELOG
             echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
           else
-            echo "‼️PUSH‼️"
+            echo "‼️PUSH‼️ "
             # Get the commit messages from the github.event.commits variable
             COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
             # Append each commit message to the changelog file
