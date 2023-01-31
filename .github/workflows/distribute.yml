@@ -42,35 +42,16 @@ jobs:
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
-          # Define changelog file path
-          CHANGELOG_FILE="./CHANGELOG.md"
-
-          # Get the commit messages from the github.event.commits variable
-          COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
-
-          # Initialize the changelog file with current date
-          echo -e "## $(date +%Y-%m-%d)\n" > "$CHANGELOG_FILE"
-
-          # Append each commit message to the changelog file
-          while read -r message; do
-            echo "- $message" >> "$CHANGELOG_FILE"
-          done <<< "$COMMIT_MESSAGES"
-
-          # echo "Commit messages are ${COMMIT_MESSAGES[@]}"
-          echo "Changelog file:"
-          cat $CHANGELOG_FILE
-
-
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
           if [ "${{ github.event.name }}" == "pull_request" ]; then
             echo "‼️PULL REQUEST‼️"
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
             echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-          else
+          elif [ "${{ github.event.name }}" == "push" ]; then
             echo "‼️PUSH‼️"
             # Get the commit messages from the github.event.commits variable
-            COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
+            COMMIT_MESSAGES=$(jq -r 'try .commits[].message' <<< '${{toJSON(github.event)}}')
             # Append each commit message to the changelog file
             while read -r message; do
               echo "- $message" >> "$CHANGELOG"
