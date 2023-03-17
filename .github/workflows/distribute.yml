@@ -54,21 +54,17 @@ jobs:
             echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
             echo "BRANCH_NAME is $BRANCH_NAME"
-            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/demo..HEAD | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/${TARGET_BRANCH}..HEAD | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
             while read N; do
               gh pr view $N --json title,body | jq -r '.body' >> $CHANGELOG
             done <<< $PR_NUMBERS
 
           else
             echo "‼️PUSH‼️"
-            # Get the commit messages from the github.event.commits variable
-            COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
-            # Append each commit message to the changelog file
-            while read -r message; do
-              echo "- $message" >> "$CHANGELOG"
-            done <<< "$COMMIT_MESSAGES"
+            for MESSAGE in $(jq '.commits[].message' <<< '${{toJSON(github.event)}}'); do
+              jq -r <<< $MESSAGE | sed -n 1p >> ${CHANGELOG}
+            done
           fi
-
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
