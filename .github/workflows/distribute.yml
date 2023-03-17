@@ -25,6 +25,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Distribute Test
         env:
@@ -54,8 +56,8 @@ jobs:
             echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
             echo "BRANCH_NAME is $BRANCH_NAME"
-            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
-            
+            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s HEAD...${{ github.event.pull_request.base.sha }} | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+
             echo "PR_NUMBERS are"
             echo $PR_NUMBERS
             while read N; do
