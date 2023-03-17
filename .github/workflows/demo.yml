@@ -1,10 +1,6 @@
 name: Distribute Demo
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - demo
   push:
     branches:
       - demo
