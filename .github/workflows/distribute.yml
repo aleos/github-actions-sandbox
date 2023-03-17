@@ -54,15 +54,17 @@ jobs:
             echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
             echo "BRANCH_NAME is $BRANCH_NAME"
-            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/${TARGET_BRANCH}..HEAD | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/${TARGET_BRANCH}..${BRANCH_NAME} | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            echo "PR_NUMBERS are"
+            echo $PR_NUMBERS
             while read N; do
-              gh pr view $N --json title,body | jq -r '.body' >> $CHANGELOG
+              gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
 
           else
             echo "‼️PUSH‼️"
             for MESSAGE in $(jq '.commits[].message' <<< '${{toJSON(github.event)}}'); do
-              jq -r <<< $MESSAGE | sed -n 1p >> ${CHANGELOG}
+              jq -r <<< ${MESSAGE} | sed -n 1p >> ${CHANGELOG}
             done
           fi
 
