@@ -18,7 +18,8 @@ jobs:
       BUILD_DIR: ${{ './build' }}
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
-      FILE_NAME: "filename-${{ inputs.scheme }}"
+      FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
+      NAME2: ${{ secrets[format('{0}_SECREt', inputs.scheme)] }}
 
     steps:
 
@@ -26,6 +27,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Distribute Test
+        env:
+          SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Test logs"
 
@@ -33,4 +37,38 @@ jobs:
           echo "Scheme is ${SCHEME}"
           echo "Version is ${CURRENT_PROJECT_VERSION}"
           echo "RUN_ID is ${GITHUB_RUN_ID}"
+          echo "github.run_number is ${{ github.run_number }}"
+          echo "github.run_attempt is ${{ github.run_attempt }}"
           echo "Filename is ${FILE_NAME}"
+          echo "ENV var is ${SOME_ENV_VAR}"
+          echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
+
+          CHANGELOG=${RUNNER_TEMP}/CHANGELOG
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "‼️PULL REQUEST‼️"
+            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
+            echo "" >> $CHANGELOG
+            echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+            echo "" >> $CHANGELOG
+            TARGET_BRANCH=${{ github.base_ref }}
+            echo "TARGET_BRANCH is $TARGET_BRANCH"
+            BRANCH_NAME=${{ github.head_ref }}
+            echo "BRANCH_NAME is $BRANCH_NAME"
+            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/demo..HEAD | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            while read N; do
+              gh pr view $N --json title,body | jq -r '.body' >> $CHANGELOG
+            done <<< $PR_NUMBERS
+
+          else
+            echo "‼️PUSH‼️"
+            # Get the commit messages from the github.event.commits variable
+            COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
+            # Append each commit message to the changelog file
+            while read -r message; do
+              echo "- $message" >> "$CHANGELOG"
+            done <<< "$COMMIT_MESSAGES"
+          fi
+
+
+          echo "CHANGELOG IS"
+          cat $CHANGELOG

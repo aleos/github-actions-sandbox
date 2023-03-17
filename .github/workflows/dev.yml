@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - dev
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
 
 jobs:
   dev:
     uses: ./.github/workflows/distribute.yml
     with:
-      scheme: "Dev"
+      scheme: "Some"
     secrets: inherit
