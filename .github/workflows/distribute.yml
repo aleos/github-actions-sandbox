@@ -63,6 +63,11 @@ jobs:
             echo "‼️PUSH‼️"
             # Get the commit messages from the github.event.commits variable
             COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
+            echo "COMMIT_MESSAGES are"
+            echo ${COMMIT_MESSAGES}
+            echo "========"
+            echo ${{ github.event }}
+            echo "========"
             # Append each commit message to the changelog file
             while read -r message; do
               echo "- $message" >> "$CHANGELOG"
