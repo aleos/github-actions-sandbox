@@ -29,6 +29,7 @@ jobs:
       - name: Distribute Test
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "Test logs"
 
