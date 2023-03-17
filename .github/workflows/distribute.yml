@@ -72,6 +72,3 @@ jobs:
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
-
-          echo "============="
-          gh api repos/:owner/:repo
