@@ -29,7 +29,7 @@ jobs:
       - name: Distribute Test
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Test logs"
 
