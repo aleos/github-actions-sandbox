@@ -56,7 +56,7 @@ jobs:
             echo "BRANCH_NAME is $BRANCH_NAME"
             PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s origin/${TARGET_BRANCH}..${BRANCH_NAME} | grep "Merge pull request" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
             echo "PR_NUMBERS are"
-            echoe $PR_NUMBERS
+            echo $PR_NUMBERS
             while read N; do
               gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
