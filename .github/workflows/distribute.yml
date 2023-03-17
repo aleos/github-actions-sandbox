@@ -61,3 +61,6 @@ jobs:
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
+
+          echo "============="
+          echo `gh api repos/metapax/metapax-ios`
