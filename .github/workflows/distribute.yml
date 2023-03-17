@@ -43,15 +43,15 @@ jobs:
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
-          if [ "${{ github.event.name }}" == "pull_request" ]; then
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "‼️PULL REQUEST‼️"
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
             echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-          elif [ "${{ github.event.name }}" == "push" ]; then
+          else
             echo "‼️PUSH‼️"
             # Get the commit messages from the github.event.commits variable
-            COMMIT_MESSAGES=$(jq -r 'try .commits[].message' <<< '${{toJSON(github.event)}}')
+            COMMIT_MESSAGES=$(jq -r '.commits[].message' <<< '${{toJSON(github.event)}}')
             # Append each commit message to the changelog file
             while read -r message; do
               echo "- $message" >> "$CHANGELOG"
