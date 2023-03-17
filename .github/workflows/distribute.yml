@@ -69,6 +69,5 @@ jobs:
             done <<< "$COMMIT_MESSAGES"
           fi
 
-
           echo "CHANGELOG IS"
           cat $CHANGELOG
