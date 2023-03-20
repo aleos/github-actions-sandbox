@@ -65,7 +65,7 @@ jobs:
             echo "PR_NUMBERS are"
             echo $PR_NUMBERS
             while read N; do
-              gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
+              gh pr view ${N} --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
 
           else
