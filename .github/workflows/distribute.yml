@@ -76,6 +76,13 @@ jobs:
             PP=$(git log --reverse --merges --pretty=format:%s HEAD...6842e41f406fa7bf7a0f5e78f9b0695da13cb869 | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
             echo ${PP}
             while read N; do
+              echo ↣${N}
+            done <<< "${PP}"
+
+
+            PP=$(git log --reverse --merges --pretty=format:%s HEAD...6842e41f406fa7bf7a0f5e78f9b0695da13cb869 | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            echo ${PP}
+            while read N; do
               echo ↣${PP}
             done <<< ${PP}
 
