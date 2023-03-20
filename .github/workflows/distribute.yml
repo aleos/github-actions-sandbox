@@ -54,8 +54,10 @@ jobs:
 
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
-            echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-            echo "" >> $CHANGELOG
+            if [ -n "${{ github.event.pull_request.body }}" ]; then
+              echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+              echo "" >> $CHANGELOG
+            fi
             TARGET_BRANCH=${{ github.base_ref }}
             echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
