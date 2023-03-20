@@ -47,6 +47,7 @@ jobs:
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
+          touch ${CHANGELOG}
 
           if [ "${{ github.event_name }}" == "pull_request" ]; then
 
@@ -54,8 +55,10 @@ jobs:
 
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
-            echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-            echo "" >> $CHANGELOG
+            if [ -n "${{ github.event.pull_request.body }}" ]; then
+              echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+              echo "" >> $CHANGELOG
+            fi
             TARGET_BRANCH=${{ github.base_ref }}
             echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
@@ -63,7 +66,10 @@ jobs:
 
             PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
             while read N; do
-              gh pr view ${N} --json title,body | jq -r '.body' >> ${CHANGELOG}
+              MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
+              if [ -n "${MESSAGE}" ]; then
+                echo "${MESSAGE}" >> ${CHANGELOG}
+              fi
             done <<< "${PR_NUMBERS}"
 
           else
