@@ -49,7 +49,6 @@ jobs:
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
           touch ${CHANGELOG}
 
-
           if [ "${{ github.event_name }}" == "pull_request" ]; then
 
             echo "‼️ PULL REQUEST 🚀"
