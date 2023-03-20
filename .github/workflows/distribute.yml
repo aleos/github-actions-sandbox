@@ -70,6 +70,7 @@ jobs:
 
             echo "‼️ PUSH 🎲"
 
+
             for MESSAGE in $(jq '.commits[].message | @base64' <<< ${GITHUB_EVENT}); do
               jq -r <<< ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
