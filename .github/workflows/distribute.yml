@@ -67,7 +67,6 @@ jobs:
             while read N; do
               gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
-            
 
           else
 
