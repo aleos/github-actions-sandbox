@@ -66,8 +66,9 @@ jobs:
 
           else
             echo "‼️PUSH‼️"
-            for MESSAGE in $(jq '.commits[].message' <<< "${{toJSON(github.event)}}"); do
-              jq -r <<< ${MESSAGE} | sed -n 1p >> ${CHANGELOG}
+            
+            for MESSAGE in $(jq '.commits[].message' <<< '${{toJSON(github.event)}}'); do
+              jq -r <<< ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
           fi
 
