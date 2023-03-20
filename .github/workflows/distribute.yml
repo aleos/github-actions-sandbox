@@ -63,10 +63,9 @@ jobs:
             while read N; do
               gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
-
           else
             echo "‼️PUSH‼️"
-            
+
             for MESSAGE in $(jq '.commits[].message' <<< '${{toJSON(github.event)}}'); do
               jq -r <<< ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
