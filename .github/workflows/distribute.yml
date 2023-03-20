@@ -46,7 +46,9 @@ jobs:
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
+
           if [ "${{ github.event_name }}" == "pull_request" ]; then
+
             echo "‼️PULL REQUEST‼️"
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
@@ -63,13 +65,16 @@ jobs:
             while read N; do
               gh pr view $N --json title,body | jq -r '.body' >> ${CHANGELOG}
             done <<< $PR_NUMBERS
+
           else
+
             echo "‼️PUSH‼️"
 
             EVENT=${{toJSON(github.event)}}
             for MESSAGE in $(jq '.commits[].message' <<< ${EVENT}); do
               jq -r <<< ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
+            
           fi
 
           echo "CHANGELOG IS"
