@@ -67,7 +67,6 @@ jobs:
             done <<< "${PR_NUMBERS}"
 
           else
-          
 
             echo "‼️ PUSH 🎲"
 
