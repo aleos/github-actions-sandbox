@@ -50,8 +50,8 @@ jobs:
 
           if [ "${{ github.event_name }}" == "pull_request" ]; then
 
-            echo "‼️PULL REQUEST‼️"
-            
+            echo "‼️PULL REQUEST🚀"
+
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
             echo "" >> $CHANGELOG
             echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
