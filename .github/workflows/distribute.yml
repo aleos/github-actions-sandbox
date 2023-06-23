@@ -65,14 +65,12 @@ jobs:
                 echo "${MESSAGE}" >> ${CHANGELOG}
               fi
             done <<< "${PR_NUMBERS}"
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
+          else
             echo "‼️ PUSH 🎲 or PR update 🦋"
 
             jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
               echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
-          else
-            echo "This is a pull request which is not merged. No further actions."
           fi
 
           echo "CHANGELOG IS"
