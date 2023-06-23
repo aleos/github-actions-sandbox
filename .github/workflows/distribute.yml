@@ -41,18 +41,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_EVENT: ${{ toJSON(github.event) }}
         run: |
-          CHANGELOG=${RUNNER_TEMP}/CHANGELOG
-          touch ${CHANGELOG}
+          CHANGELOG_PATH=${RUNNER_TEMP}/CHANGELOG
+          touch ${CHANGELOG_PATH}
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
-            echo "" >> $CHANGELOG
+            echo "" >> $CHANGELOG_PATH
             if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
               echo "‼️ MERGED PULL REQUEST 🚀"
 
               if [ -n "${{ github.event.pull_request.body }}" ]; then
-                echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
-                echo "" >> $CHANGELOG
+                echo "${{ github.event.pull_request.body }}" >> $CHANGELOG_PATH
+                echo "" >> $CHANGELOG_PATH
               fi
               TARGET_BRANCH=${{ github.base_ref }}
               echo "TARGET_BRANCH is $TARGET_BRANCH"
@@ -63,13 +63,13 @@ jobs:
               while read N; do
                 MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
                 if [ -n "${MESSAGE}" ]; then
-                  echo "${MESSAGE}" >> ${CHANGELOG}
+                  echo "${MESSAGE}" >> ${CHANGELOG_PATH}
                 fi
               done <<< "${PR_NUMBERS}"
             else
               echo "‼️ PULL REQUEST 🏃‍♂️"
 
-              echo "..." >> $CHANGELOG
+              echo "..." >> $CHANGELOG_PATH
               if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
                 BEFORE_SHA=${{ github.event.before }}
                 AFTER_SHA=${{ github.event.after }}
@@ -82,7 +82,7 @@ jobs:
 
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
-                  echo "${COMMIT}" >> ${CHANGELOG}
+                  echo "${COMMIT}" >> ${CHANGELOG_PATH}
                 fi
               done <<< "${COMMITS}"
             fi
@@ -90,16 +90,16 @@ jobs:
             echo "‼️ PUSH 🎲"
 
             jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
-              echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
+              echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG_PATH}
             done
           else
             echo "This is a pull request which is not merged. No further actions."
           fi
 
           echo "CHANGELOG IS"
-          cat $CHANGELOG
+          cat $CHANGELOG_PATH
 
-          echo "SAFE_CHANGELOG_PATH=${CHANGELOG}" >> $GITHUB_ENV
+          echo "SAFE_CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
 
       - name: Distribute Test
         env:
