@@ -1,0 +1,16 @@
+name: PR synchronized on dev
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches:
+      - dev
+
+
+jobs:
+  distribute:
+    name: Distribute to Dev
+    uses: ./.github/workflows/distribute.yml
+    with:
+      scheme: "Dev"
+    secrets: inherit

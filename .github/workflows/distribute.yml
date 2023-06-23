@@ -1,4 +1,4 @@
-name: Distribute Reusable
+name: Distribute
 
 on:
   workflow_call:
@@ -36,25 +36,11 @@ jobs:
       - name: Print new build number
         run: echo "Build number is $BUILD_NUMBER"
         
-
-      - name: Distribute Test
+      - name: Generate changelog
         env:
-          SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_EVENT: ${{ toJSON(github.event) }}
         run: |
-          echo "Test logs"
-
-          echo "Branch is ${GITHUB_BASE_REF}"
-          echo "Scheme is ${SCHEME}"
-          echo "Version is ${CURRENT_PROJECT_VERSION}"
-          echo "RUN_ID is ${GITHUB_RUN_ID}"
-          echo "github.run_number is ${{ github.run_number }}"
-          echo "github.run_attempt is ${{ github.run_attempt }}"
-          echo "Filename is ${FILE_NAME}"
-          echo "ENV var is ${SOME_ENV_VAR}"
-          echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
-
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
           touch ${CHANGELOG}
 
@@ -93,3 +79,26 @@ jobs:
 
           echo "CHANGELOG IS"
           cat $CHANGELOG
+
+          echo "SAFE_CHANGELOG_PATH=${CHANGELOG}" >> $GITHUB_ENV
+
+      - name: Distribute Test
+        env:
+          SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+          SAFE_CHANGELOG_PATH: ${{ env.SAFE_CHANGELOG_PATH }}
+        run: |
+          echo "Test logs"
+
+          echo "Branch is ${GITHUB_BASE_REF}"
+          echo "Scheme is ${SCHEME}"
+          echo "Version is ${CURRENT_PROJECT_VERSION}"
+          echo "RUN_ID is ${GITHUB_RUN_ID}"
+          echo "github.run_number is ${{ github.run_number }}"
+          echo "github.run_attempt is ${{ github.run_attempt }}"
+          echo "Filename is ${FILE_NAME}"
+          echo "ENV var is ${SOME_ENV_VAR}"
+          echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
+
+          

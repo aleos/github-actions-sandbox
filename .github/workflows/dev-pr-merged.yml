@@ -1,0 +1,15 @@
+name: PR merged to dev
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
+
+jobs:
+  distribute:
+    name: Distribute to Stage
+    uses: ./.github/workflows/distribute.yml
+    with:
+      scheme: "Stage"
+    secrets: inherit

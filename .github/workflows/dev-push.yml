@@ -1,18 +1,14 @@
-name: Distribute Dev
+name: Pushed to dev
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - dev
   push:
     branches:
       - dev
 
-
 jobs:
-  dev:
+  distribute:
+    name: Distribute to Dev
     uses: ./.github/workflows/distribute.yml
     with:
-      scheme: "Some"
+      scheme: "Dev"
     secrets: inherit
