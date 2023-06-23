@@ -44,37 +44,55 @@ jobs:
           CHANGELOG=${RUNNER_TEMP}/CHANGELOG
           touch ${CHANGELOG}
 
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              echo "‼️ MERGED PULL REQUEST 🚀"
 
-            echo "‼️ PULL REQUEST 🚀"
-
-            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
-            echo "" >> $CHANGELOG
-            if [ -n "${{ github.event.pull_request.body }}" ]; then
-              echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+              echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
               echo "" >> $CHANGELOG
-            fi
-            TARGET_BRANCH=${{ github.base_ref }}
-            echo "TARGET_BRANCH is $TARGET_BRANCH"
-            BRANCH_NAME=${{ github.head_ref }}
-            echo "BRANCH_NAME is $BRANCH_NAME"
-
-            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
-            while read N; do
-              MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
-              if [ -n "${MESSAGE}" ]; then
-                echo "${MESSAGE}" >> ${CHANGELOG}
+              if [ -n "${{ github.event.pull_request.body }}" ]; then
+                echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
+                echo "" >> $CHANGELOG
               fi
-            done <<< "${PR_NUMBERS}"
+              TARGET_BRANCH=${{ github.base_ref }}
+              echo "TARGET_BRANCH is $TARGET_BRANCH"
+              BRANCH_NAME=${{ github.head_ref }}
+              echo "BRANCH_NAME is $BRANCH_NAME"
 
-          else
+              PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+              while read N; do
+                MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
+                if [ -n "${MESSAGE}" ]; then
+                  echo "${MESSAGE}" >> ${CHANGELOG}
+                fi
+              done <<< "${PR_NUMBERS}"
+            else
+              echo "‼️ PULL REQUEST 🏃‍♂️"
 
-            echo "‼️ PUSH 🎲"
+              if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
+                BEFORE_SHA=${{ github.event.before }}
+                AFTER_SHA=${{ github.event.after }}
+              else
+                BEFORE_SHA=${{ github.event.pull_request.base.sha }}
+                AFTER_SHA=${{ github.event.pull_request.head.sha }}
+              fi
+
+              COMMITS=$(git log --pretty=format:"%h: %s" --reverse $BEFORE_SHA..$AFTER_SHA)
+
+              while read COMMIT; do
+                if [ -n "${COMMIT}" ]; then
+                  echo "${COMMIT}" >> ${CHANGELOG}
+                fi
+              done <<< "${COMMITS}"
+            fi
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "‼️ PUSH 🎲 or PR update 🦋"
 
             jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
               echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
-
+          else
+            echo "This is a pull request which is not merged. No further actions."
           fi
 
           echo "CHANGELOG IS"
