@@ -45,11 +45,11 @@ jobs:
           touch ${CHANGELOG}
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
+            echo "" >> $CHANGELOG
             if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
               echo "‼️ MERGED PULL REQUEST 🚀"
 
-              echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
-              echo "" >> $CHANGELOG
               if [ -n "${{ github.event.pull_request.body }}" ]; then
                 echo "${{ github.event.pull_request.body }}" >> $CHANGELOG
                 echo "" >> $CHANGELOG
@@ -69,6 +69,7 @@ jobs:
             else
               echo "‼️ PULL REQUEST 🏃‍♂️"
 
+              echo "..." >> $CHANGELOG
               if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
                 BEFORE_SHA=${{ github.event.before }}
                 AFTER_SHA=${{ github.event.after }}
