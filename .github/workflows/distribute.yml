@@ -45,7 +45,7 @@ jobs:
           touch ${CHANGELOG}
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            if [[ "${{ github.event.pull_request.merged }}" == "true"]]; then
+            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
               echo "‼️ MERGED PULL REQUEST 🚀"
 
               echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
