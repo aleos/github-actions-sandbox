@@ -67,7 +67,6 @@ jobs:
                 fi
               done <<< "${PR_NUMBERS}"
             else
-              // get all commits from PR and add them to changelog
               echo "‼️ PULL REQUEST 🏃‍♂️"
 
               PR_BEFORE_SHA=${{ github.event.pull_request.base.sha }}
