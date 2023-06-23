@@ -69,15 +69,15 @@ jobs:
             else
               echo "‼️ PULL REQUEST 🏃‍♂️"
 
-              PR_BEFORE_SHA=${{ github.event.pull_request.base.sha }}
-              PR_AFTER_SHA=${{ github.event.pull_request.head.sha }}
+              if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
+                BEFORE_SHA=${{ github.event.before }}
+                AFTER_SHA=${{ github.event.after }}
+              else
+                BEFORE_SHA=${{ github.event.pull_request.base.sha }}
+                AFTER_SHA=${{ github.event.pull_request.head.sha }}
+              fi
 
-              COMMITS=$(git log --pretty=format:"%s" $PR_BEFORE_SHA..$PR_AFTER_SHA)
-
-              PR_BEFORE_SHA=${{ github.event.pull_request.base.sha }}
-              PR_AFTER_SHA=${{ github.event.pull_request.head.sha }}
-
-              COMMITS=$(git log --pretty=format:"%h: %s" $PR_BEFORE_SHA..$PR_AFTER_SHA)
+              COMMITS=$(git log --pretty=format:"%h: %s" $BEFORE_SHA..$AFTER_SHA)
 
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
