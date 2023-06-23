@@ -71,7 +71,7 @@ jobs:
 
             echo "‼️ PUSH 🎲"
 
-            jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
+            jq -r '.commits[] | "\(.id[0:7]): \(.message)" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
               echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG}
             done
 
