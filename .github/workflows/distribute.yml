@@ -77,7 +77,7 @@ jobs:
                 AFTER_SHA=${{ github.event.pull_request.head.sha }}
               fi
 
-              COMMITS=$(git log --pretty=format:"%h: %s" $BEFORE_SHA..$AFTER_SHA)
+              COMMITS=$(git log --pretty=format:"%h: %s" --reverse $BEFORE_SHA..$AFTER_SHA)
 
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
