@@ -69,12 +69,16 @@ jobs:
             else
               // get all commits from PR and add them to changelog
               echo "‼️ PULL REQUEST 🏃‍♂️"
-              echo "‼️ OPEN PULL REQUEST 📝"
 
               PR_BEFORE_SHA=${{ github.event.pull_request.base.sha }}
               PR_AFTER_SHA=${{ github.event.pull_request.head.sha }}
 
               COMMITS=$(git log --pretty=format:"%s" $PR_BEFORE_SHA..$PR_AFTER_SHA)
+
+              PR_BEFORE_SHA=${{ github.event.pull_request.base.sha }}
+              PR_AFTER_SHA=${{ github.event.pull_request.head.sha }}
+
+              COMMITS=$(git log --pretty=format:"%h: %s" $PR_BEFORE_SHA..$PR_AFTER_SHA)
 
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
