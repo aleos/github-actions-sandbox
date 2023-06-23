@@ -1,11 +1,13 @@
-name: PR synchronized on dev
+name: PR updated on dev
 
 on:
   pull_request:
-    types: [synchronize]
+    types: 
+      - synchronize
+      - opened
+      - reopened
     branches:
       - dev
-
 
 jobs:
   distribute:
