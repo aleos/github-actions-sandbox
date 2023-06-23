@@ -43,6 +43,7 @@ jobs:
         run: |
           CHANGELOG_PATH=${RUNNER_TEMP}/CHANGELOG
           touch ${CHANGELOG_PATH}
+          echo "CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
@@ -98,8 +99,6 @@ jobs:
 
           echo "CHANGELOG IS"
           cat $CHANGELOG_PATH
-
-          echo "SAFE_CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
 
       - name: Distribute Test
         env:
