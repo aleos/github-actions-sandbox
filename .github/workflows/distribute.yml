@@ -28,13 +28,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Cache SPM dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${BUILD_DIR}/DerivedData/SourcePackages
-      #     key: ${{ runner.OS }}-spm-${{ hashFiles('**/Package.resolved') }}
-      #     restore-keys: |
-      #       ${{ runner.OS }}-spm-
+      - name: Cache SPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${BUILD_DIR}/DerivedData/SourcePackages
+          key: ${{ runner.OS }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.OS }}-spm-
   
 
       - name: Generate build number
