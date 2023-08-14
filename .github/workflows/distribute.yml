@@ -146,4 +146,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: xcodebuild-log
-          path: ${BUILD_DIR}/xcodebuild.log
+          path: ./build/xcodebuild.log
