@@ -15,7 +15,7 @@ jobs:
     name: Distribute
     runs-on: macos-13
     env:
-      BUILD_DIR: ${{ './build' }}
+      BUILD_DIR: ${{ github.workspace }}/build
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
       FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
@@ -143,10 +143,8 @@ jobs:
             build | tee ${BUILD_DIR}/xcodebuild.log | xcpretty 
 
       - name: Upload xcodebuild.log
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: xcodebuild-log
           path: ${BUILD_DIR}/xcodebuild.log
-        run: |
-          echo "Upload xcodebuild.log"
-          echo "Path is ${BUILD_DIR}/xcodebuild.log"
