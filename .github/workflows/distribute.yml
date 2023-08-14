@@ -147,3 +147,4 @@ jobs:
         with:
           name: xcodebuild-log
           path: ${{ env.BUILD_DIR }}/xcodebuild.log
+          retention-days: 7
