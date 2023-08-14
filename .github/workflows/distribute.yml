@@ -31,7 +31,7 @@ jobs:
       - name: Cache SPM dependencies
         uses: actions/cache@v3
         with:
-          path: ${BUILD_DIR}/DerivedData/SourcePackages/
+          path: ${{ env.BUILD_DIR }}/DerivedData/SourcePackages/
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
@@ -146,4 +146,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: xcodebuild-log
-          path: ./build/xcodebuild.log
+          path: ${{ env.BUILD_DIR }}/xcodebuild.log
