@@ -109,6 +109,9 @@ jobs:
           echo "CHANGELOG IS"
           cat $CHANGELOG_PATH
 
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+        
       - name: Distribute Test
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
@@ -144,3 +147,6 @@ jobs:
         with:
           name: xcodebuild-log
           path: ${BUILD_DIR}/xcodebuild.log
+        run: |
+          echo "Upload xcodebuild.log"
+          echo "Path is ${BUILD_DIR}/xcodebuild.log"
