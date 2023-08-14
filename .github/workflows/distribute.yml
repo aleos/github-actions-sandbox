@@ -27,15 +27,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
+      
       - name: Cache SPM dependencies
         uses: actions/cache@v3
         with:
-          path: ${BUILD_DIR}/DerivedData/SourcePackages
-          key: ${{ runner.OS }}-spm-${{ hashFiles('**/Package.resolved') }}
+          path: ${BUILD_DIR}/DerivedData/SourcePackages/
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.OS }}-spm-
-  
+            ${{ runner.os }}-spm-
 
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
