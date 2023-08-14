@@ -133,9 +133,9 @@ jobs:
             -project "A.xcodeproj" \
             -scheme "A" \
             -destination 'generic/platform=iOS Simulator' \
-            -archivePath "../build/A.xcarchive" \
-            -resultBundlePath "../build/Artifacts/A.xcresult" \
-            -derivedDataPath ../build/DerivedData/ \
+            -archivePath "${BUILD_DIR}/A.xcarchive" \
+            -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
+            -derivedDataPath "${BUILD_DIR}/DerivedData/" \
             CURRENT_PROJECT_VERSION="7" \
             build | tee ${BUILD_DIR}/xcodebuild.log | xcpretty 
 
