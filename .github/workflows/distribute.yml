@@ -139,7 +139,7 @@ jobs:
             -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
             -derivedDataPath "${BUILD_DIR}/DerivedData/" \
             CURRENT_PROJECT_VERSION="7" \
-            build | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify
+            build | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify --renderer github-actions
 
       - name: Upload xcodebuild.log
         if: always()
