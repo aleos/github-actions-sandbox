@@ -55,7 +55,7 @@ jobs:
           echo "CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
+            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG_PATH
             echo "" >> $CHANGELOG_PATH
             if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
               echo "‼️ MERGED PULL REQUEST 🚀"
