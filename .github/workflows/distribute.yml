@@ -135,7 +135,7 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -archivePath "../build/A.xcarchive" \
             -resultBundlePath "../build/Artifacts/A.xcresult" \
+            -derivedDataPath ../build/DerivedData/ \
             CURRENT_PROJECT_VERSION="7" \
-            -derivedDataPath ../build \
             build
           
