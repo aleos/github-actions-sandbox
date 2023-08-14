@@ -132,7 +132,7 @@ jobs:
           xcodebuild -showBuildTimingSummary \
             -project "A.xcodeproj" \
             -scheme "A" \
-            -destination 'generic/platform=iOS' \
+            -destination 'generic/platform=iOS Simulator' \
             -archivePath "../build/A.xcarchive" \
             -resultBundlePath "../build/Artifacts/A.xcresult" \
             CURRENT_PROJECT_VERSION="7" \
