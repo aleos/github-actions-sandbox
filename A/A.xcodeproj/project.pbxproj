@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		574D6CC62A8A5C5F00C6BA3B /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 574D6CC52A8A5C5F00C6BA3B /* FirebaseAnalytics */; };
 		577710162A8A5229007993AE /* AApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577710152A8A5229007993AE /* AApp.swift */; };
 		577710182A8A5229007993AE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577710172A8A5229007993AE /* ContentView.swift */; };
 		5777101A2A8A522B007993AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 577710192A8A522B007993AE /* Assets.xcassets */; };
@@ -14,6 +15,7 @@
 		577710272A8A522B007993AE /* ATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577710262A8A522B007993AE /* ATests.swift */; };
 		577710312A8A522B007993AE /* AUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577710302A8A522B007993AE /* AUITests.swift */; };
 		577710332A8A522B007993AE /* AUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577710322A8A522B007993AE /* AUITestsLaunchTests.swift */; };
+		577710412A8A56FC007993AE /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 577710402A8A56FC007993AE /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				574D6CC62A8A5C5F00C6BA3B /* FirebaseAnalytics in Frameworks */,
+				577710412A8A56FC007993AE /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +147,10 @@
 			dependencies = (
 			);
 			name = A;
+			packageProductDependencies = (
+				577710402A8A56FC007993AE /* Algorithms */,
+				574D6CC52A8A5C5F00C6BA3B /* FirebaseAnalytics */,
+			);
 			productName = A;
 			productReference = 577710122A8A5229007993AE /* A.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +223,10 @@
 				Base,
 			);
 			mainGroup = 577710092A8A5229007993AE;
+			packageReferences = (
+				5777103F2A8A56FC007993AE /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				574D6CC42A8A5C5F00C6BA3B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 577710132A8A5229007993AE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -583,6 +595,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		574D6CC42A8A5C5F00C6BA3B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+		5777103F2A8A56FC007993AE /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		574D6CC52A8A5C5F00C6BA3B /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 574D6CC42A8A5C5F00C6BA3B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		577710402A8A56FC007993AE /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5777103F2A8A56FC007993AE /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5777100A2A8A5229007993AE /* Project object */;
 }
