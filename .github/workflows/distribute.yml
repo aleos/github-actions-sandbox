@@ -138,7 +138,7 @@ jobs:
             -resultBundlePath "../build/Artifacts/A.xcresult" \
             -derivedDataPath ../build/DerivedData/ \
             CURRENT_PROJECT_VERSION="7" \
-            build | tee ${BUILD_DIR}/xcodebuild.log | xcpretty 
+            build | tee ../${BUILD_DIR}/xcodebuild.log | xcpretty 
 
       - name: Upload xcodebuild.log
         uses: actions/upload-artifact@v3
