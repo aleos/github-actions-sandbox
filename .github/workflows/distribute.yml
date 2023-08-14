@@ -128,6 +128,7 @@ jobs:
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
+          mkdir -p ${BUILD_DIR}
           cd ./A
           xcodebuild -showBuildTimingSummary \
             -project "A.xcodeproj" \
