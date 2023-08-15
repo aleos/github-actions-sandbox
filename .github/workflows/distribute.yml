@@ -11,11 +11,13 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
 
 jobs:
-  distribute:
-    name: Distribute
+  archive:
+    name: Archive
     runs-on: macos-13
+    outputs:
+      ARCHIVE_PATH: ${{ steps.archive.outputs.ARCHIVE_PATH }}
     env:
-      BUILD_DIR: ${{ './build' }}
+      BUILD_DIR: ${{ github.workspace }}/build
       SCHEME: ${{ inputs.scheme }}
       CURRENT_PROJECT_VERSION: ${{ github.run_id }}
       FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
@@ -27,6 +29,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      
+      - name: Cache SPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.BUILD_DIR }}/DerivedData/SourcePackages/
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
 
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
@@ -46,7 +56,7 @@ jobs:
           echo "CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG
+            echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG_PATH
             echo "" >> $CHANGELOG_PATH
             if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
               echo "‼️ MERGED PULL REQUEST 🚀"
@@ -100,7 +110,11 @@ jobs:
           echo "CHANGELOG IS"
           cat $CHANGELOG_PATH
 
-      - name: Distribute Test
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+        
+      - name: Archive Test
+        id: archive
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,4 +133,40 @@ jobs:
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
-          
+          ARCHIVE_PATH=${BUILD_DIR}/Artifacts/A.xcarchive
+          echo "ARCHIVE_PATH=${ARCHIVE_PATH}" >> $GITHUB_ENV
+          echo "::set-output name=ARCHIVE_PATH::${ARCHIVE_PATH}"
+
+          mkdir -p ${BUILD_DIR}
+          xcodebuild -showBuildTimingSummary \
+            -project "A.xcodeproj" \
+            -scheme "A" \
+            -destination 'generic/platform=iOS Simulator' \
+            -archivePath "${ARCHIVE_PATH}" \
+            -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
+            -derivedDataPath "${BUILD_DIR}/DerivedData/" \
+            CURRENT_PROJECT_VERSION="7" \
+            archive | tee ${BUILD_DIR}/Artifacts/xcodebuild.log | xcbeautify --renderer github-actions
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: ${{ env.BUILD_DIR }}/Artifacts
+          retention-days: 7
+
+  upload:
+    needs: archive
+    runs-on: ubuntu-latest
+    env:
+      ARCHIVE_PATH: ${{ needs.archive.outputs.ARCHIVE_PATH }}
+    steps:
+      - name: Download Archive
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+      - name: Upload
+        run: |
+          ls -al ${{ steps.download.outputs.download-path }}
