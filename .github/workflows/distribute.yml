@@ -145,7 +145,7 @@ jobs:
             -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
             -derivedDataPath "${BUILD_DIR}/DerivedData/" \
             CURRENT_PROJECT_VERSION="7" \
-            build | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify --renderer github-actions
+            archive | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify --renderer github-actions
 
       - name: Upload xcodebuild.log
         if: always()
@@ -160,7 +160,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: archive
-          path: ${{ env.BUILD_DIR }}/A.xcarchive
+          path: ${{ env.ARCHIVE_PATH }}
           retention-days: 1
 
   upload:
@@ -176,5 +176,5 @@ jobs:
           name: archive
       - name: Upload
         run: |
-          echo "Uploading ${ARCHIVE_PATH}"
+          echo "ARCHIVE_PATH is ${ARCHIVE_PATH}"
           echo ${{ steps.download.outputs.download-path }}
