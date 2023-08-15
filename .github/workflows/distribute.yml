@@ -134,7 +134,7 @@ jobs:
 
           ARCHIVE_PATH=${BUILD_DIR}/A.xcarchive
           echo "ARCHIVE_PATH=${ARCHIVE_PATH}" >> $GITHUB_ENV
-          echo "set-output name=ARCHIVE_PATH::${ARCHIVE_PATH}"
+          echo "::set-output name=ARCHIVE_PATH::${ARCHIVE_PATH}"
 
           mkdir -p ${BUILD_DIR}
           xcodebuild -showBuildTimingSummary \
@@ -147,21 +147,13 @@ jobs:
             CURRENT_PROJECT_VERSION="7" \
             archive | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify --renderer github-actions
 
-      - name: Upload xcodebuild.log
+      - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: xcodebuild-log
-          path: ${{ env.BUILD_DIR }}/xcodebuild.log
+          name: artifacts
+          path: ${{ env.BUILD_DIR }}
           retention-days: 7
-
-      - name: Upload Archive
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: archive
-          path: ${{ env.ARCHIVE_PATH }}
-          retention-days: 1
 
   upload:
     needs: archive
@@ -176,5 +168,4 @@ jobs:
           name: archive
       - name: Upload
         run: |
-          echo "ARCHIVE_PATH is ${ARCHIVE_PATH}"
-          echo ${{ steps.download.outputs.download-path }}
+          ls -al ${{ steps.download.outputs.download-path }}
