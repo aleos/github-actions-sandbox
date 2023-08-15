@@ -132,7 +132,7 @@ jobs:
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
-          ARCHIVE_PATH=${BUILD_DIR}/A.xcarchive
+          ARCHIVE_PATH=${BUILD_DIR}/Artifacts/A.xcarchive
           echo "ARCHIVE_PATH=${ARCHIVE_PATH}" >> $GITHUB_ENV
           echo "::set-output name=ARCHIVE_PATH::${ARCHIVE_PATH}"
 
@@ -145,14 +145,14 @@ jobs:
             -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
             -derivedDataPath "${BUILD_DIR}/DerivedData/" \
             CURRENT_PROJECT_VERSION="7" \
-            archive | tee ${BUILD_DIR}/xcodebuild.log | xcbeautify --renderer github-actions
+            archive | tee ${BUILD_DIR}/Artifacts/xcodebuild.log | xcbeautify --renderer github-actions
 
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: ${{ env.BUILD_DIR }}
+          path: ${{ env.BUILD_DIR }}/Artifacts
           retention-days: 7
 
   upload:
