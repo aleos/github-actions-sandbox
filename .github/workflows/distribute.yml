@@ -165,7 +165,7 @@ jobs:
         id: download
         uses: actions/download-artifact@v3
         with:
-          name: archive
+          name: artifacts
       - name: Upload
         run: |
           ls -al ${{ steps.download.outputs.download-path }}
