@@ -11,9 +11,11 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
 
 jobs:
-  distribute:
-    name: Distribute
+  archive:
+    name: Archive
     runs-on: macos-13
+    outputs:
+      ARCHIVE_PATH: ${{ steps.archive.outputs.ARCHIVE_PATH }}
     env:
       BUILD_DIR: ${{ github.workspace }}/build
       SCHEME: ${{ inputs.scheme }}
@@ -111,7 +113,7 @@ jobs:
       - name: Install xcbeautify
         run: brew install xcbeautify
         
-      - name: Distribute Test
+      - name: Archive Test
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -130,12 +132,16 @@ jobs:
           echo "ENV var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
+          ARCHIVE_PATH=${BUILD_DIR}/A.xcarchive
+          echo "ARCHIVE_PATH=${ARCHIVE_PATH}" >> $GITHUB_ENV
+          echo "set-output name=ARCHIVE_PATH::${ARCHIVE_PATH}"
+
           mkdir -p ${BUILD_DIR}
           xcodebuild -showBuildTimingSummary \
             -project "A.xcodeproj" \
             -scheme "A" \
             -destination 'generic/platform=iOS Simulator' \
-            -archivePath "${BUILD_DIR}/A.xcarchive" \
+            -archivePath "${ARCHIVE_PATH}" \
             -resultBundlePath "${BUILD_DIR}/Artifacts/A.xcresult" \
             -derivedDataPath "${BUILD_DIR}/DerivedData/" \
             CURRENT_PROJECT_VERSION="7" \
@@ -148,3 +154,27 @@ jobs:
           name: xcodebuild-log
           path: ${{ env.BUILD_DIR }}/xcodebuild.log
           retention-days: 7
+
+      - name: Upload Archive
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: archive
+          path: ${{ env.BUILD_DIR }}/A.xcarchive
+          retention-days: 1
+
+  upload:
+    needs: archive
+    runs-on: ubuntu-latest
+    env:
+      ARCHIVE_PATH: ${{ needs.archive.outputs.ARCHIVE_PATH }}
+    steps:
+      - name: Download Archive
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: archive
+      - name: Upload
+        run: |
+          echo "Uploading ${ARCHIVE_PATH}"
+          echo ${{ steps.download.outputs.download-path }}
