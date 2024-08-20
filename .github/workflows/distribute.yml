@@ -33,7 +33,6 @@ env:
 
 jobs:
   detect-environment:
-    id: detect-environment
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.detect-env.outputs.environment }}
@@ -67,6 +66,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Debug Environment
+        run: echo "Detected environment is: ${{ needs.detect-environment.outputs.environment }}"
+        
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
         with:
@@ -87,7 +89,7 @@ jobs:
           echo "GITHUB_BASE_REF is ${GITHUB_BASE_REF}"
           echo "github.base_ref is ${{ github.base_ref }}"
           echo "github.ref_name is ${{ github.ref_name }}"
-          echo "needs.prepare.outputs.environment is ${{ needs.detect-environment.outputs.environment }}"
+          echo "needs.detect-environment.outputs.environment is ${{ needs.detect-environment.outputs.environment }}"
 
           echo "secrets.PROFILE_ADHOC_BASE64 is ${{ secrets.PROFILE_ADHOC_BASE64 }}"
           echo "vars.SCHEME is ${{ vars.SCHEME }}"
