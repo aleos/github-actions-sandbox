@@ -1,6 +1,21 @@
 name: Distribute
 
 on:
+  push:
+    branches:
+      - 'dev'
+      - 'preprod'
+      - 'main'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+    branches:
+      - 'dev'
+      - 'preprod'
+      - 'main'
   workflow_call:
     inputs:
       scheme:
@@ -11,31 +26,32 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
 
 jobs:
-  distribute:
-    name: Distribute
-    runs-on: macos-13
-    env:
-      BUILD_DIR: ${{ './build' }}
-      SCHEME: ${{ inputs.scheme }}
-      CURRENT_PROJECT_VERSION: ${{ github.run_id }}
-      FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
-      NAME2: ${{ secrets[format('{0}_SECREt', inputs.scheme)] }}
-
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
     steps:
+      - name: Determine target environment
+        id: set-env
+        run: |
+          case "${{ github.ref_name }}" in
+            "main")
+              ENVIRONMENT="production"
+              ;;
+            "preprod")
+              ENVIRONMENT="preprod"
+              ;;
+            "dev")
+              if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+                ENVIRONMENT="stage"
+              else
+                ENVIRONMENT="dev"
+              fi
+              ;;
+          esac
 
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
-      - name: Generate build number
-        uses: onyxmueller/build-tag-number@v1
-        with:
-          token: ${{secrets.github_token}}
-          prefix: 0.2.6
-      - name: Print new build number
-        run: echo "Build number is $BUILD_NUMBER"
-        
       - name: Generate changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,6 +116,32 @@ jobs:
           echo "CHANGELOG IS"
           cat $CHANGELOG_PATH
 
+  distribute:
+    needs: prepare
+    runs-on: macos-13
+    if: ${{ needs.prepare.outputs.environment }}
+    environment: ${{ needs.prepare.outputs.environment }}
+    env:
+      BUILD_DIR: ${{ './build' }}
+      SCHEME: ${{ inputs.scheme }}
+      CURRENT_PROJECT_VERSION: ${{ github.run_id }}
+      FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
+      NAME2: ${{ secrets[format('{0}_SECREt', inputs.scheme)] }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Generate build number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{secrets.github_token}}
+          prefix: 0.2.6
+      - name: Print new build number
+        run: echo "Build number is $BUILD_NUMBER"
+        
       - name: Distribute Test
         env:
           SOME_ENV_VAR: ${{ secrets.Some_SECREt }}
@@ -109,14 +151,18 @@ jobs:
         run: |
           echo "Test logs"
 
-          echo "Branch is ${GITHUB_BASE_REF}"
-          echo "Scheme is ${SCHEME}"
-          echo "Version is ${CURRENT_PROJECT_VERSION}"
-          echo "RUN_ID is ${GITHUB_RUN_ID}"
+          echo "GITHUB_BASE_REF is ${GITHUB_BASE_REF}"
+          echo "github.base_ref is ${{ github.base_ref }}"
+          echo "github.ref_name is ${{ github.ref_name }}"
+          echo "needs.prepare.outputs.environment is ${{ steps.prepare.outputs.environment }}"
+
+          echo "SCHEME is ${SCHEME}"
+          echo "CURRENT_PROJECT_VERSION is ${CURRENT_PROJECT_VERSION}"
+          echo "GITHUB_RUN_ID is ${GITHUB_RUN_ID}"
           echo "github.run_number is ${{ github.run_number }}"
           echo "github.run_attempt is ${{ github.run_attempt }}"
-          echo "Filename is ${FILE_NAME}"
-          echo "ENV var is ${SOME_ENV_VAR}"
+          echo "FILE_NAME is ${FILE_NAME}"
+          echo "SOME_ENV_VAR var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
           
