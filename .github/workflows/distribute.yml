@@ -138,7 +138,7 @@ jobs:
                 AFTER_SHA=${{ github.event.pull_request.head.sha }}
               fi
               
-              echo "Read commits"
+              echo "Read commits. Echo ${BEFORE_SHA}..${AFTER_SHA}"
               COMMITS=$(git log --pretty=format:"%h: %s" --reverse "${BEFORE_SHA}..${AFTER_SHA}")
 
               echo "End of commits"
