@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Generate Changelog
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}  # Inherits from workflow environment
         GITHUB_EVENT: ${{ toJSON(github.event) }}
         CHANGELOG_DIR: ${{ inputs.changelog_dir }}
       shell: bash
@@ -69,4 +69,18 @@ runs:
 
         SAFE_CHANGELOG_PATH=${CHANGELOG_DIR}/SAFE_CHANGELOG
         remove_emojis() {
-          while IFS= read -r line;​⬤
+          while IFS= read -r line; do
+            line=$(echo "$line" | awk '{sub(/^[^[:alnum:][:space:][:punct:]]+/, "- ")}1')
+            line=$(echo "$line" | awk '{sub(/[^[:alnum:][:space:][:punct:]]+/, "")}1')
+            echo "$line"
+          done
+        }
+        remove_emojis < "${CHANGELOG_PATH}" > "${SAFE_CHANGELOG_PATH}"
+
+    - name: Upload Changelog Artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: changelog
+        path: ${{ inputs.changelog_dir }}
+        retention-days: 7
