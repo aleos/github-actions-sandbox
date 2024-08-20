@@ -8,7 +8,8 @@ runs:
   using: "composite"
   steps:
     - name: Detect Environment
-      id: set-env
+      id: detect-env
+      shell: bash
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
           ENVIRONMENT="${{ github.event.inputs.environment }}"

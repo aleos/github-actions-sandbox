@@ -11,6 +11,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT: ${{ toJSON(github.event) }}
+      shell: bash
       run: |
         CHANGELOG_PATH=${CHANGELOG_DIR}/CHANGELOG
         mkdir -p ${CHANGELOG_DIR}
