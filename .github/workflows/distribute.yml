@@ -58,6 +58,8 @@ jobs:
         uses: ./.github/actions/generate-changelog
         with:
           changelog_dir: ${{ github.workspace }}/Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
   archive-artifacts:
     runs-on: ubuntu-latest
