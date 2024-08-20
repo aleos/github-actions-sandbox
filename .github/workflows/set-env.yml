@@ -9,6 +9,8 @@ jobs:
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Determine target environment
         id: set-env
         run: |
