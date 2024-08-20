@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Detect environment
         id: detect-env
-        uses: ./.github/actions/action-output
+        uses: ./.github/actions/output-action
             
   archive-artifacts:
     runs-on: ubuntu-latest
