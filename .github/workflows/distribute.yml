@@ -42,6 +42,8 @@ jobs:
     outputs:
       environment: ${{ steps.detect-env.outputs.environment }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
       - name: Detect environment
         id: detect-env
         uses: ./.github/actions/detect-environment
@@ -49,6 +51,8 @@ jobs:
   generate-changelog:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
       - name: Generate Changelog
         id: changelog
         uses: ./.github/actions/generate-changelog
