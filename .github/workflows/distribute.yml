@@ -21,6 +21,18 @@ on:
       scheme:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - stage
+          - preprod
+          - production
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
@@ -34,7 +46,13 @@ jobs:
       - name: Determine target environment
         id: set-env
         run: |
-          case "${{ github.ref_name }}" in
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+
+          case "$BRANCH_NAME" in
             "main")
               ENVIRONMENT="production"
               ;;
@@ -51,8 +69,6 @@ jobs:
           esac
 
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
-
-          echo "The target environment is $ENVIRONMENT"
 
       - name: Generate changelog
         env:
