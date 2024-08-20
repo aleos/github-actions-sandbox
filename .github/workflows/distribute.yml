@@ -154,7 +154,7 @@ jobs:
           echo "GITHUB_BASE_REF is ${GITHUB_BASE_REF}"
           echo "github.base_ref is ${{ github.base_ref }}"
           echo "github.ref_name is ${{ github.ref_name }}"
-          echo "steps.prepare.outputs.environment is ${{ steps.prepare.outputs.environment }}"
+          echo "needs.prepare.outputs.environment is ${{ needs.prepare.outputs.environment }}"
 
           echo "secrets.PROFILE_ADHOC_BASE64 is ${{ secrets.PROFILE_ADHOC_BASE64 }}"
           echo "vars.SCHEME is ${{ vars.SCHEME }}"
