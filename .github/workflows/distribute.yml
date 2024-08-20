@@ -52,15 +52,15 @@ jobs:
             "main")
               ENVIRONMENT="production"
               ;;
-            "preprod")
-              ENVIRONMENT="preprod"
-              ;;
             "dev")
-              if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              if [[ "${{ github.event_name }}" == "pull_request" ]]; then
                 ENVIRONMENT="stage"
               else
                 ENVIRONMENT="dev"
               fi
+              ;;
+            *)
+              ENVIRONMENT="dev"
               ;;
           esac
 
