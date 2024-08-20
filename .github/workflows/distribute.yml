@@ -52,6 +52,8 @@ jobs:
 
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
+          echo "The target environment is $ENVIRONMENT"
+
       - name: Generate changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
