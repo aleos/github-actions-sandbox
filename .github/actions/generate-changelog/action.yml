@@ -1,0 +1,89 @@
+name: "Generate Changelog"
+description: "Generate a changelog based on recent commits"
+
+runs:
+  using: "composite"
+  env:
+    CHANGELOG_DIR: ${{ github.workspace }}/Changelog
+
+  steps:
+    - name: Generate
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_EVENT: ${{ toJSON(github.event) }}
+      run: |
+        CHANGELOG_PATH=${CHANGELOG_DIR}/CHANGELOG
+        mkdir -p ${CHANGELOG_DIR}
+        touch ${CHANGELOG_PATH}
+
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}" >> $CHANGELOG_PATH
+          echo "" >> $CHANGELOG_PATH
+          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            echo "‼️ MERGED PULL REQUEST 🚀"
+            if [ -n "${{ github.event.pull_request.body }}" ]; then
+              echo "${{ github.event.pull_request.body }}" >> $CHANGELOG_PATH
+              echo "" >> $CHANGELOG_PATH
+            fi
+            TARGET_BRANCH=${{ github.base_ref }}
+            echo "TARGET_BRANCH is $TARGET_BRANCH"
+            BRANCH_NAME=${{ github.head_ref }}
+            echo "BRANCH_NAME is $BRANCH_NAME"
+
+            PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
+            while read N; do
+              MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
+              if [ -n "${MESSAGE}" ]; then
+                echo "${MESSAGE}" >> ${CHANGELOG_PATH}
+              fi
+            done <<< "${PR_NUMBERS}"
+          else
+            echo "‼️ PULL REQUEST 🏃‍♂️"
+            echo "..." >> $CHANGELOG_PATH
+            if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
+              BEFORE_SHA=${{ github.event.before }}
+              AFTER_SHA=${{ github.event.after }}
+            else
+              BEFORE_SHA=${{ github.event.pull_request.base.sha }}
+              AFTER_SHA=${{ github.event.pull_request.head.sha }}
+            fi
+            COMMITS=$(git log --pretty=format:"%h: %s" --reverse $BEFORE_SHA..$AFTER_SHA)
+            while read COMMIT; do
+              if [ -n "${COMMIT}" ]; then
+                echo "${COMMIT}" >> ${CHANGELOG_PATH}
+              fi
+            done <<< "${COMMITS}"
+          fi
+        elif [[ "${{ github.event_name }}" == "push" ]]; then
+          echo "‼️ PUSH 🎲"
+          jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
+            echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG_PATH}
+          done
+        fi
+
+        echo "-----BEGIN CHANGELOG-----"
+        cat ${CHANGELOG_PATH}
+        echo "------END CHANGELOG------"
+
+        SAFE_CHANGELOG_PATH=${CHANGELOG_DIR}/SAFE_CHANGELOG
+        remove_emojis() {
+          while IFS= read -r line; do
+            # Replace emoji+space with dash+space if at the beginning of the line
+            line=$(echo "$line" | awk '{sub(/^[^[:alnum:][:space:][:punct:]]+/, "- ")}1')
+            # Remove all remaining emojis
+            line=$(echo "$line" | awk '{sub(/[^[:alnum:][:space:][:punct:]]+/, "")}1')
+            # Output the processed line
+            echo "$line"
+          done
+        }
+        # Read the content from ${CHANGELOG_PATH}, process it with remove_emojis function, and make the result JSON friendly by replacing new lines with '\n'
+        remove_emojis < "${CHANGELOG_PATH}" > "${SAFE_CHANGELOG_PATH}"
+        # remove_emojis < "${CHANGELOG_PATH}" | awk '{printf "%s\\n", $0}' > "${SAFE_CHANGELOG_PATH}"
+
+    - name: Upload
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: changelog
+        path: ${{ env.CHANGELOG_DIR }}
+        retention-days: 7

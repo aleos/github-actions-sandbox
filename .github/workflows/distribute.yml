@@ -1,4 +1,4 @@
-name: Distribute
+name: distribute
 
 on:
   push:
@@ -22,9 +22,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Deployment environment"
+        description: 'Select the environment to deploy to'
         required: true
-        default: "dev"
+        default: 'dev'
         type: choice
         options:
           - dev
@@ -37,101 +37,31 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
 
 jobs:
-  prepare:
+  detect-environment:
     runs-on: ubuntu-latest
     outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
+      environment: ${{ steps.detect-env.outputs.environment }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set environment
-        id: set-env
-        uses: ./.github/workflows/set-env.yml
-  
-      - name: Generate changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_EVENT: ${{ toJSON(github.event) }}
-        run: |
-          CHANGELOG_PATH=${RUNNER_TEMP}/CHANGELOG
-          touch ${CHANGELOG_PATH}
-          echo "CHANGELOG_PATH=${CHANGELOG_PATH}" >> $GITHUB_ENV
+      - name: Detect environment
+        id: detect-env
+        uses: ./.github/actions/detect-environment
 
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "#${{ github.event.pull_request.number }} '${{ github.event.pull_request.title }}'" >> $CHANGELOG_PATH
-            echo "" >> $CHANGELOG_PATH
-            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
-              echo "‼️ MERGED PULL REQUEST 🚀"
-
-              if [ -n "${{ github.event.pull_request.body }}" ]; then
-                echo "${{ github.event.pull_request.body }}" >> $CHANGELOG_PATH
-                echo "" >> $CHANGELOG_PATH
-              fi
-              TARGET_BRANCH=${{ github.base_ref }}
-              echo "TARGET_BRANCH is $TARGET_BRANCH"
-              BRANCH_NAME=${{ github.head_ref }}
-              echo "BRANCH_NAME is $BRANCH_NAME"
-
-              PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
-              while read N; do
-                MESSAGE=$(gh pr view ${N} --json title,body | jq -r '.body')
-                if [ -n "${MESSAGE}" ]; then
-                  echo "${MESSAGE}" >> ${CHANGELOG_PATH}
-                fi
-              done <<< "${PR_NUMBERS}"
-            else
-              echo "‼️ PULL REQUEST 🏃‍♂️"
-
-              echo "..." >> $CHANGELOG_PATH
-              if [[ -n "${{ github.event.before }}" ]] && [[ -n "${{ github.event.after }}" ]]; then
-                BEFORE_SHA=${{ github.event.before }}
-                AFTER_SHA=${{ github.event.after }}
-              else
-                BEFORE_SHA=${{ github.event.pull_request.base.sha }}
-                AFTER_SHA=${{ github.event.pull_request.head.sha }}
-              fi
-              
-              COMMITS=$(git log --pretty=format:"%h: %s" --reverse "${BEFORE_SHA}..${AFTER_SHA}")
-
-              echo "End of commits"
-              while read COMMIT; do
-                if [ -n "${COMMIT}" ]; then
-                  echo "${COMMIT}" >> ${CHANGELOG_PATH}
-                fi
-              done <<< "${COMMITS}"
-            fi
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "‼️ PUSH 🎲"
-
-            jq -r '.commits[] | "\(.id[0:7]): \(.message)\n" | @base64' <<< ${GITHUB_EVENT} | while read MESSAGE; do
-              echo ${MESSAGE} | base64 --decode | head -n1 >> ${CHANGELOG_PATH}
-            done
-          else
-            echo "This is a pull request which is not merged. No further actions."
-          fi
-
-          echo "CHANGELOG IS"
-          cat $CHANGELOG_PATH
-
-  distribute:
-    needs: prepare
-    runs-on: macos-13
-    if: ${{ needs.prepare.outputs.environment }}
-    environment: ${{ needs.prepare.outputs.environment }}
-    env:
-      BUILD_DIR: ${{ './build' }}
-      SCHEME: ${{ inputs.scheme }}
-      CURRENT_PROJECT_VERSION: ${{ github.run_id }}
-      FILE_NAME: "filename-${{ inputs.scheme }}-${{ secrets.Some_SECREt }}"
-      NAME2: ${{ secrets[format('{0}_SECREt', inputs.scheme)] }}
-
+  generate-changelog:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Generate Changelog
+        id: changelog
+        uses: ./.github/actions/generate-changelog
+      
+  archive-artifacts:
+    runs-on: ubuntu-latest
+    needs: detect-environment
+    environment: ${{ needs.detect-environment.outputs.environment }}
+    outputs:
+      archive-path: ${{ steps.archive.outputs.archive-path }}
+    steps:
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
@@ -153,7 +83,7 @@ jobs:
           echo "GITHUB_BASE_REF is ${GITHUB_BASE_REF}"
           echo "github.base_ref is ${{ github.base_ref }}"
           echo "github.ref_name is ${{ github.ref_name }}"
-          echo "needs.prepare.outputs.environment is ${{ needs.prepare.outputs.environment }}"
+          echo "needs.prepare.outputs.environment is ${{ needs.detect-environment.outputs.environment }}"
 
           echo "secrets.PROFILE_ADHOC_BASE64 is ${{ secrets.PROFILE_ADHOC_BASE64 }}"
           echo "vars.SCHEME is ${{ vars.SCHEME }}"
@@ -167,4 +97,19 @@ jobs:
           echo "SOME_ENV_VAR var is ${SOME_ENV_VAR}"
           echo "NAME2 is ${NAME2}, NAME2 length is `echo ${NAME2} | wc -m`"
 
-          
+      - name: Archive Artifacts
+        id: archive
+        run: |
+          echo "Archiving artifacts for ${{ needs.detect-environment.outputs.environment }} environment"
+          mkdir -p artifacts
+          echo "data" > artifacts/file.txt
+          echo "archive-path=artifacts" >> $GITHUB_OUTPUT
+
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    needs: [detect-environment, archive-artifacts, generate-changelog]
+    environment: ${{ needs.detect-environment.outputs.environment }}
+    steps:
+      - name: Upload Artifacts
+        run: |
+          echo "Uploading artifacts from ${{ needs.archive-artifacts.outputs.archive-path }} for ${{ env.environment }} environment"

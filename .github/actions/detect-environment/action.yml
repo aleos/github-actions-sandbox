@@ -1,19 +1,18 @@
-name: Set Environment
+name: "Detect Environment"
+description: "Detect the environment based on the branch and event context"
+outputs:
+  environment:
+    description: "The detected environment"
 
-on:
-  workflow_call:
-
-jobs:
-  set-env:
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Determine target environment
-        id: set-env
-        run: |
+runs:
+  using: "composite"
+  steps:
+    - name: Detect Environment
+      id: set-env
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+        else
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             if [[ "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
               BRANCH_NAME="${{ github.base_ref }}"
@@ -42,5 +41,7 @@ jobs:
               ENVIRONMENT="dev"
               ;;
           esac
+        fi
 
-          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+        echo "Detected environment: $ENVIRONMENT"
+        echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
