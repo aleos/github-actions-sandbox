@@ -94,6 +94,7 @@ jobs:
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
           echo "Target environment is $ENVIRONMENT"
+          
 
       - name: Generate changelog
         env:
