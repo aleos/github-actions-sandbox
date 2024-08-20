@@ -141,7 +141,7 @@ jobs:
               echo "Read commits"
               COMMITS=$(git log --pretty=format:"%h: %s" --reverse "${BEFORE_SHA}..${AFTER_SHA}")
 
-              
+              echo "End of commits"
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
                   echo "${COMMIT}" >> ${CHANGELOG_PATH}
