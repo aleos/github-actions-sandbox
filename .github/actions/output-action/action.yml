@@ -1,0 +1,15 @@
+name: "Detect Environment"
+outputs:
+  environment:
+    description: "The detected environment"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Detect Environment
+      shell: bash
+      run: |
+        ENVIRONMENT="Environment"
+
+        echo "Detected environment: $ENVIRONMENT"
+        echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT

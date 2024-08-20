@@ -1,0 +1,32 @@
+name: action-output
+
+on:
+  push:
+    branches:
+        - '**'
+
+jobs:
+  detect-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.detect-env.outputs.environment }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Detect environment
+        id: detect-env
+        uses: ./.github/actions/action-output
+            
+  archive-artifacts:
+    runs-on: ubuntu-latest
+    needs: detect-environment
+    environment: ${{ needs.detect-environment.outputs.environment }}
+    outputs:
+      archive-path: ${{ steps.archive.outputs.archive-path }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Debug Environment
+        run: |
+          echo "Detected environment is: ${{ needs.detect-environment.outputs.environment }}"
