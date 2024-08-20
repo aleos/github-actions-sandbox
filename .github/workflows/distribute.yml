@@ -40,6 +40,10 @@ jobs:
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Determine target environment
         id: set-env
         run: |
