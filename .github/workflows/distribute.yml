@@ -14,11 +14,6 @@ on:
       - closed
     branches:
       - '**'
-  workflow_call:
-    inputs:
-      scheme:
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       environment:
@@ -38,6 +33,7 @@ env:
 
 jobs:
   detect-environment:
+    id: detect-environment
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.detect-env.outputs.environment }}
