@@ -1,15 +1,14 @@
 name: "Generate Changelog"
 description: "Generate a changelog based on recent commits"
+env:
+    CHANGELOG_DIR: ${{ github.workspace }}/Changelog
 
 runs:
   using: "composite"
-  env:
-    CHANGELOG_DIR: ${{ github.workspace }}/Changelog
-
   steps:
     - name: Generate
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT: ${{ toJSON(github.event) }}
       shell: bash
       run: |
