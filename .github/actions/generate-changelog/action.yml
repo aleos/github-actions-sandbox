@@ -1,15 +1,19 @@
 name: "Generate Changelog"
 description: "Generate a changelog based on recent commits"
-env:
-    CHANGELOG_DIR: ${{ github.workspace }}/Changelog
+
+inputs:
+  changelog_dir:
+    description: "Directory to store the changelog"
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Generate
+    - name: Generate Changelog
       env:
-        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT: ${{ toJSON(github.event) }}
+        CHANGELOG_DIR: ${{ inputs.changelog_dir }}
       shell: bash
       run: |
         CHANGELOG_PATH=${CHANGELOG_DIR}/CHANGELOG
@@ -26,9 +30,7 @@ runs:
               echo "" >> $CHANGELOG_PATH
             fi
             TARGET_BRANCH=${{ github.base_ref }}
-            echo "TARGET_BRANCH is $TARGET_BRANCH"
             BRANCH_NAME=${{ github.head_ref }}
-            echo "BRANCH_NAME is $BRANCH_NAME"
 
             PR_NUMBERS=$(git log --reverse --merges --pretty=format:%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -o "Merge pull request #\([0-9]*\)" | sed -n 's/Merge pull request #\([0-9]*\).*/\1/p')
             while read N; do
@@ -67,23 +69,4 @@ runs:
 
         SAFE_CHANGELOG_PATH=${CHANGELOG_DIR}/SAFE_CHANGELOG
         remove_emojis() {
-          while IFS= read -r line; do
-            # Replace emoji+space with dash+space if at the beginning of the line
-            line=$(echo "$line" | awk '{sub(/^[^[:alnum:][:space:][:punct:]]+/, "- ")}1')
-            # Remove all remaining emojis
-            line=$(echo "$line" | awk '{sub(/[^[:alnum:][:space:][:punct:]]+/, "")}1')
-            # Output the processed line
-            echo "$line"
-          done
-        }
-        # Read the content from ${CHANGELOG_PATH}, process it with remove_emojis function, and make the result JSON friendly by replacing new lines with '\n'
-        remove_emojis < "${CHANGELOG_PATH}" > "${SAFE_CHANGELOG_PATH}"
-        # remove_emojis < "${CHANGELOG_PATH}" | awk '{printf "%s\\n", $0}' > "${SAFE_CHANGELOG_PATH}"
-
-    - name: Upload
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: changelog
-        path: ${{ env.CHANGELOG_DIR }}
-        retention-days: 7
+          while IFS= read -r line;​⬤

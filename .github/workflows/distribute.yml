@@ -56,7 +56,9 @@ jobs:
       - name: Generate Changelog
         id: changelog
         uses: ./.github/actions/generate-changelog
-      
+        with:
+          changelog_dir: ${{ github.workspace }}/Changelog
+            
   archive-artifacts:
     runs-on: ubuntu-latest
     needs: detect-environment
