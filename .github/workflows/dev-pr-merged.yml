@@ -1,11 +1,11 @@
 name: PR closed
 
-on:
-  pull_request:
-    types: 
-      - closed
-    branches:
-      - dev
+# on:
+#   pull_request:
+#     types: 
+#       - closed
+#     branches:
+#       - dev
 
 jobs:
   distribute:
