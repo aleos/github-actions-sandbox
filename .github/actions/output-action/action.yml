@@ -2,11 +2,13 @@ name: "Detect Environment"
 outputs:
   environment:
     description: "The detected environment"
+    value: ${{ steps.detect-env.outputs.environment }}
 
 runs:
   using: "composite"
   steps:
     - name: Detect Environment
+      id: detect-env
       shell: bash
       run: |
         ENVIRONMENT="Environment"
