@@ -67,7 +67,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Debug Environment
-        run: echo "Detected environment is: ${{ needs.detect-environment.outputs.environment }}"
+        run: |
+          echo "Detected environment is: ${{ needs.detect-environment.outputs.environment }}"
         
       - name: Generate build number
         uses: onyxmueller/build-tag-number@v1
