@@ -3,11 +3,13 @@ description: "Detect the environment based on the branch and event context"
 outputs:
   environment:
     description: "The detected environment"
+    value: ${{ steps.detect-env.outputs.environment }}
 
 runs:
   using: "composite"
   steps:
     - name: Detect Environment
+      id: detect-env
       shell: bash
       run: |
         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
