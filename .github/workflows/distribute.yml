@@ -3,9 +3,7 @@ name: Distribute
 on:
   push:
     branches:
-      - 'dev'
-      - 'preprod'
-      - 'main'
+      - '**'
   pull_request:
     types:
       - opened
@@ -13,9 +11,7 @@ on:
       - reopened
       - closed
     branches:
-      - 'dev'
-      - 'preprod'
-      - 'main'
+      - '**'
   workflow_call:
     inputs:
       scheme:
