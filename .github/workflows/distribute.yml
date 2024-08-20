@@ -137,10 +137,11 @@ jobs:
                 BEFORE_SHA=${{ github.event.pull_request.base.sha }}
                 AFTER_SHA=${{ github.event.pull_request.head.sha }}
               fi
-
+              
+              echo "Read commits"
               COMMITS=$(git log --pretty=format:"%h: %s" --reverse $BEFORE_SHA..$AFTER_SHA)
 
-              echo "Read commits"
+              
               while read COMMIT; do
                 if [ -n "${COMMIT}" ]; then
                   echo "${COMMIT}" >> ${CHANGELOG_PATH}
