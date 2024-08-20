@@ -30,6 +30,7 @@ on:
           - preprod
           - production
 
+          
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
 
@@ -42,8 +43,31 @@ jobs:
       - name: Determine target environment
         id: set-env
         run: |
+          # Determine the branch name based on the event context:
+          # 1. For a merged pull request (closed and merged), use the target
+          #    branch (github.base_ref).
+          # 2. For an open or synchronized pull request, use the source branch
+          #    (github.head_ref).
+          # 3. For push events, use the branch name directly (github.ref_name).
+          #
+          # Deployments are aligned with the branching strategy:
+          #   * Merged pull requests are deployed to the environment
+          #     corresponding to the target branch, ensuring that changes are
+          #     correctly integrated into the appropriate environment (e.g.,
+          #     merging into "main" deploys to "production").
+          #   * For ongoing development and testing, pull requests against "dev"
+          #     are deployed to a staging environment ("stage"), providing a
+          #     safe area to verify changes before they are merged into the main
+          #     branch.
+          #   * Pushes to branches directly are handled as normal, with branch-
+          #     specific environments for consistent deployments.
+
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BRANCH_NAME="${{ github.head_ref }}"
+            if [[ "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              BRANCH_NAME="${{ github.base_ref }}"
+            else
+              BRANCH_NAME="${{ github.head_ref }}"
+            fi
           else
             BRANCH_NAME="${{ github.ref_name }}"
           fi
@@ -51,6 +75,9 @@ jobs:
           case "$BRANCH_NAME" in
             "main")
               ENVIRONMENT="production"
+              ;;
+            "release")
+              ENVIRONMENT="preprod"
               ;;
             "dev")
               if [[ "${{ github.event_name }}" == "pull_request" ]]; then
